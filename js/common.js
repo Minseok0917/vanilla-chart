@@ -1,4 +1,5 @@
 const random = (max, min) => Math.round(Math.random() * (max - min)) + min;
+const randomColor = () => `rgb(${random(0, 256)},${random(0, 256)},${random(0, 256)})`;
 const createData = (label) => ({ label, value: random(1000, 0) });
 const createGraphCanvas = () => {
   const $canvas = document.createElement("canvas");
@@ -195,6 +196,46 @@ function renderLineGraph({ width, height, textWidth, borderStyle, borderWeight, 
 
   document.body.append($canvas);
 }
+function renderPieGraph({ width, height, paddingLeft, paddingRight, paddingTop, paddingBottom, datas }) {
+  const graph = createGraphCanvas();
+  const { $canvas, context } = graph;
+  graph.setWidth(width);
+  graph.setHeight(height);
+
+  const graphStartX = paddingLeft;
+  const graphEndX = width - paddingRight;
+  const graphStartY = paddingTop;
+  const graphEndY = height - paddingBottom;
+
+  const graphWidth = graphEndX - graphStartX;
+  const graphHeight = graphEndY - graphStartY;
+  const arcX = graphStartX + graphWidth / 2;
+  const arcY = graphStartY + graphHeight / 2;
+  const radius = Math.min(graphWidth / 2, graphHeight / 2);
+  const sumValue = datas.reduce((acc, { value }) => acc + value, 0);
+  const ratio = 2 / sumValue;
+  const percent = 100 / sumValue;
+
+  function renderGraph() {
+    datas.reduce((startAngel, { label, value }) => {
+      const endAngle = startAngel + ratio * value;
+      const background = randomColor();
+      context.beginPath();
+      context.moveTo(arcX, arcY);
+      context.arc(arcX, arcY, radius, Math.PI * startAngel, Math.PI * endAngle);
+      context.fillStyle = background;
+      context.fill();
+
+      context.beginPath();
+      console.log(percent * value);
+
+      return endAngle;
+    }, -0.5);
+  }
+  renderGraph();
+
+  document.body.append($canvas);
+}
 
 renderBarGraph({
   width: 1200,
@@ -220,4 +261,14 @@ renderLineGraph({
   paddingTop: 30,
   paddingBottom: 50,
   datas: Array.from(Array(random(40, 3))).map((_, index) => createData(index + 1)),
+});
+
+renderPieGraph({
+  width: 800,
+  height: 800,
+  paddingLeft: 20,
+  paddingRight: 20,
+  paddingTop: 20,
+  paddingBottom: 20,
+  datas: Array.from(Array(random(5, 2))).map((_, index) => createData(index + 1)),
 });
