@@ -1,5 +1,5 @@
 - [x] Bar Graph
-- [ ] Line Graph
+- [x] Line Graph
 - [ ] Pie Graph
 - [ ] Polar Area Graph
 - [ ] Radar Graph
